@@ -56,10 +56,18 @@ function BookingPage() {
   const { service: serviceParam } = Route.useSearch();
   const navigate = useNavigate();
   const submit = useServerFn(createBooking);
+  const fetchProviders = useServerFn(listActiveProviders);
 
   const [slug, setSlug] = useState(findService(serviceParam)?.slug ?? SERVICES[0]!.slug);
   const [saving, setSaving] = useState(false);
+  const [providerId, setProviderId] = useState("");
   const selected = findService(slug)!;
+
+  const { data: providers } = useQuery({
+    queryKey: ["active-providers"],
+    queryFn: () => fetchProviders(),
+  });
+  const chosenProvider = (providers ?? []).find((p) => p.id === providerId);
 
   async function onSubmit(event: React.FormEvent<HTMLFormElement>): Promise<void> {
     event.preventDefault();
@@ -74,6 +82,8 @@ function BookingPage() {
       booking_time: String(form.get("booking_time") ?? ""),
       guests: Number(form.get("guests") ?? 1),
       notes: String(form.get("notes") ?? "").trim(),
+      provider_id: providerId,
+      provider_name: chosenProvider?.name ?? "",
     };
 
     if (payload.customer_name.length < 2) {
