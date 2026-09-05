@@ -59,7 +59,7 @@ function BookingPage() {
   const [saving, setSaving] = useState(false);
   const selected = findService(slug)!;
 
-  async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
+  async function onSubmit(event: React.FormEvent<HTMLFormElement>): Promise<void> {
     event.preventDefault();
     const form = new FormData(event.currentTarget);
     const payload = {
@@ -74,12 +74,27 @@ function BookingPage() {
       notes: String(form.get("notes") ?? "").trim(),
     };
 
-    if (payload.customer_name.length < 2) return toast.error("Please enter your full name.");
-    if (payload.phone.length < 7) return toast.error("Please enter a valid phone number.");
-    if (!payload.booking_date) return toast.error("Please choose a preferred date.");
-    if (!payload.booking_time) return toast.error("Please choose a preferred time.");
-    if (payload.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(payload.email))
-      return toast.error("Please enter a valid email address or leave it blank.");
+    if (payload.customer_name.length < 2) {
+      toast.error("Please enter your full name.");
+      return;
+    }
+    if (payload.phone.length < 7) {
+      toast.error("Please enter a valid phone number.");
+      return;
+    }
+    if (!payload.booking_date) {
+      toast.error("Please choose a preferred date.");
+      return;
+    }
+    if (!payload.booking_time) {
+      toast.error("Please choose a preferred time.");
+      return;
+    }
+    if (payload.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(payload.email)) {
+      toast.error("Please enter a valid email address or leave it blank.");
+      return;
+    }
+
 
     setSaving(true);
     try {
