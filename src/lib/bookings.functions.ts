@@ -13,6 +13,8 @@ const bookingSchema = z.object({
   booking_time: z.string().trim().min(3).max(20),
   guests: z.number().int().min(1).max(10),
   notes: z.string().trim().max(1000).optional().or(z.literal("")),
+  provider_id: z.string().uuid().optional().or(z.literal("")),
+  provider_name: z.string().trim().max(80).optional().or(z.literal("")),
 });
 
 export const createBooking = createServerFn({ method: "POST" })
