@@ -33,6 +33,8 @@ export const createBooking = createServerFn({ method: "POST" })
         booking_time: data.booking_time,
         guests: data.guests,
         notes: data.notes ? data.notes : null,
+        provider_id: data.provider_id ? data.provider_id : null,
+        provider_name: data.provider_name ? data.provider_name : null,
       })
       .select("reference, service, price, booking_date, booking_time, status")
       .single();
