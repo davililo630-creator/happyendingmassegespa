@@ -1,10 +1,12 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
 
 import { createBooking } from "@/lib/bookings.functions";
+import { listActiveProviders } from "@/lib/providers.functions";
 import { SERVICES, findService, formatPrice } from "@/lib/spa";
 
 const searchSchema = z.object({
