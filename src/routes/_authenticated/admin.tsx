@@ -37,6 +37,7 @@ type Booking = {
   booking_time: string;
   guests: number;
   notes: string | null;
+  provider_name: string | null;
   status: string;
   created_at: string;
 };
