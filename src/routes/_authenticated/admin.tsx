@@ -4,6 +4,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 
+import { ProviderManager } from "@/components/admin/ProviderManager";
 import { listBookings, updateBookingStatus } from "@/lib/bookings.functions";
 import { SERVICES, formatPrice } from "@/lib/spa";
 import { supabase } from "@/integrations/supabase/client";
