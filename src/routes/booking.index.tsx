@@ -1,10 +1,12 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
 
 import { createBooking } from "@/lib/bookings.functions";
+import { listActiveProviders } from "@/lib/providers.functions";
 import { SERVICES, findService, formatPrice } from "@/lib/spa";
 
 const searchSchema = z.object({
@@ -54,10 +56,18 @@ function BookingPage() {
   const { service: serviceParam } = Route.useSearch();
   const navigate = useNavigate();
   const submit = useServerFn(createBooking);
+  const fetchProviders = useServerFn(listActiveProviders);
 
   const [slug, setSlug] = useState(findService(serviceParam)?.slug ?? SERVICES[0]!.slug);
   const [saving, setSaving] = useState(false);
+  const [providerId, setProviderId] = useState("");
   const selected = findService(slug)!;
+
+  const { data: providers } = useQuery({
+    queryKey: ["active-providers"],
+    queryFn: () => fetchProviders(),
+  });
+  const chosenProvider = (providers ?? []).find((p) => p.id === providerId);
 
   async function onSubmit(event: React.FormEvent<HTMLFormElement>): Promise<void> {
     event.preventDefault();
@@ -72,6 +82,8 @@ function BookingPage() {
       booking_time: String(form.get("booking_time") ?? ""),
       guests: Number(form.get("guests") ?? 1),
       notes: String(form.get("notes") ?? "").trim(),
+      provider_id: providerId,
+      provider_name: chosenProvider?.name ?? "",
     };
 
     if (payload.customer_name.length < 2) {
@@ -218,6 +230,50 @@ function BookingPage() {
               />
             </label>
           </div>
+
+          {providers && providers.length > 0 ? (
+            <div>
+              <span className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
+                Choose Your Service Provider
+              </span>
+              <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4">
+                {providers.map((p) => {
+                  const active = providerId === p.id;
+                  return (
+                    <button
+                      type="button"
+                      key={p.id}
+                      onClick={() => setProviderId(active ? "" : p.id)}
+                      className={`overflow-hidden rounded-xl border text-left transition-all ${
+                        active
+                          ? "border-gold shadow-luxe"
+                          : "border-border hover:border-gold/50"
+                      }`}
+                    >
+                      {p.photo_signed_url ? (
+                        <img
+                          src={p.photo_signed_url}
+                          alt={`${p.name}, massage therapist`}
+                          loading="lazy"
+                          className="aspect-3/4 w-full object-cover"
+                        />
+                      ) : (
+                        <div className="flex aspect-3/4 w-full items-center justify-center bg-onyx/60 font-display text-3xl text-gold">
+                          {p.name.slice(0, 1)}
+                        </div>
+                      )}
+                      <span className="block px-2 py-2 text-center text-sm">{p.name}</span>
+                    </button>
+                  );
+                })}
+              </div>
+              <p className="mt-2 text-xs text-muted-foreground">
+                Optional — tap a provider to request them for your session.
+              </p>
+            </div>
+          ) : null}
+
+
 
           <label className="block">
             <span className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Notes (optional)</span>

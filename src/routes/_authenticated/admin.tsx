@@ -4,6 +4,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 
+import { ProviderManager } from "@/components/admin/ProviderManager";
 import { listBookings, updateBookingStatus } from "@/lib/bookings.functions";
 import { SERVICES, formatPrice } from "@/lib/spa";
 import { supabase } from "@/integrations/supabase/client";
@@ -36,6 +37,7 @@ type Booking = {
   booking_time: string;
   guests: number;
   notes: string | null;
+  provider_name: string | null;
   status: string;
   created_at: string;
 };
@@ -180,6 +182,10 @@ function AdminPage() {
                     <dt className="inline text-foreground">Guests: </dt>
                     <dd className="inline">{b.guests}</dd>
                   </div>
+                  <div>
+                    <dt className="inline text-foreground">Provider: </dt>
+                    <dd className="inline">{b.provider_name ?? "No preference"}</dd>
+                  </div>
                 </dl>
                 {b.notes ? (
                   <p className="mt-3 text-sm text-muted-foreground">Notes: {b.notes}</p>
@@ -188,6 +194,8 @@ function AdminPage() {
             ))}
           </div>
         )}
+
+        <ProviderManager />
       </div>
     </div>
   );

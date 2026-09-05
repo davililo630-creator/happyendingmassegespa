@@ -26,6 +26,8 @@ export type Database = {
           notes: string | null
           phone: string
           price: number
+          provider_id: string | null
+          provider_name: string | null
           reference: string
           service: string
           status: Database["public"]["Enums"]["booking_status"]
@@ -42,6 +44,8 @@ export type Database = {
           notes?: string | null
           phone: string
           price?: number
+          provider_id?: string | null
+          provider_name?: string | null
           reference?: string
           service: string
           status?: Database["public"]["Enums"]["booking_status"]
@@ -58,9 +62,49 @@ export type Database = {
           notes?: string | null
           phone?: string
           price?: number
+          provider_id?: string | null
+          provider_name?: string | null
           reference?: string
           service?: string
           status?: Database["public"]["Enums"]["booking_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bookings_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "providers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      providers: {
+        Row: {
+          created_at: string
+          id: string
+          is_active: boolean
+          name: string
+          photo_url: string | null
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name: string
+          photo_url?: string | null
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name?: string
+          photo_url?: string | null
+          sort_order?: number
           updated_at?: string
         }
         Relationships: []

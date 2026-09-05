@@ -13,6 +13,8 @@ const bookingSchema = z.object({
   booking_time: z.string().trim().min(3).max(20),
   guests: z.number().int().min(1).max(10),
   notes: z.string().trim().max(1000).optional().or(z.literal("")),
+  provider_id: z.string().uuid().optional().or(z.literal("")),
+  provider_name: z.string().trim().max(80).optional().or(z.literal("")),
 });
 
 export const createBooking = createServerFn({ method: "POST" })
@@ -31,6 +33,8 @@ export const createBooking = createServerFn({ method: "POST" })
         booking_time: data.booking_time,
         guests: data.guests,
         notes: data.notes ? data.notes : null,
+        provider_id: data.provider_id ? data.provider_id : null,
+        provider_name: data.provider_name ? data.provider_name : null,
       })
       .select("reference, service, price, booking_date, booking_time, status")
       .single();
