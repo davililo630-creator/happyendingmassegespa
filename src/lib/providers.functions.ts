@@ -87,8 +87,12 @@ export const updateProvider = createServerFn({ method: "POST" })
     providerInput.partial().extend({ id: z.string().uuid() }).parse(data),
   )
   .handler(async ({ data, context }) => {
-    const { id, ...patch } = data;
-    const { error } = await context.supabase.from("providers").update(patch).eq("id", id);
+    const patch: Record<string, unknown> = {};
+    if (data.name !== undefined) patch['name'] = data.name;
+    if (data.photo_url !== undefined) patch['photo_url'] = data.photo_url;
+    if (data.sort_order !== undefined) patch['sort_order'] = data.sort_order;
+    if (data.is_active !== undefined) patch['is_active'] = data.is_active;
+    const { error } = await context.supabase.from("providers").update(patch).eq("id", data.id);
     if (error) throw new Error(error.message);
     return { ok: true };
   });
