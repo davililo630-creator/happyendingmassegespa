@@ -182,6 +182,10 @@ function AdminPage() {
                     <dt className="inline text-foreground">Guests: </dt>
                     <dd className="inline">{b.guests}</dd>
                   </div>
+                  <div>
+                    <dt className="inline text-foreground">Provider: </dt>
+                    <dd className="inline">{b.provider_name ?? "No preference"}</dd>
+                  </div>
                 </dl>
                 {b.notes ? (
                   <p className="mt-3 text-sm text-muted-foreground">Notes: {b.notes}</p>
@@ -190,6 +194,8 @@ function AdminPage() {
             ))}
           </div>
         )}
+
+        <ProviderManager />
       </div>
     </div>
   );
