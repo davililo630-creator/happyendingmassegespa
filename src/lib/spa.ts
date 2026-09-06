@@ -16,9 +16,45 @@ export const SPA_NAME = "Happy Ending Massage Spa";
 export const TAGLINE = "Relax. Restore. Reconnect.";
 export const PHONE_DISPLAY = "0182095210";
 export const PHONE_TEL = "tel:0182095210";
-export const WHATSAPP_URL =
-  "https://wa.me/254182095210?text=" +
-  encodeURIComponent("Hello Happy Ending Massage Spa, I would like to ask about your treatments.");
+export const WHATSAPP_BASE_URL = "https://wa.me/254182095210";
+export function buildWhatsAppUrl(message: string) {
+  return `${WHATSAPP_BASE_URL}?text=${encodeURIComponent(message)}`;
+}
+export const WHATSAPP_URL = buildWhatsAppUrl(
+  "Hello Happy Ending Massage Spa, I would like to ask about your treatments.",
+);
+export function buildBookingWhatsAppUrl(booking: {
+  reference?: string;
+  customer_name?: string;
+  phone?: string;
+  email?: string;
+  service?: string;
+  price?: number;
+  booking_date?: string;
+  booking_time?: string;
+  guests?: number;
+  provider_name?: string | null;
+  notes?: string;
+}) {
+  const lines = [
+    "Hello Happy Ending Massage Spa, I would like to book a session.",
+    "",
+    booking.reference ? `Reference: ${booking.reference}` : undefined,
+    booking.customer_name ? `Name: ${booking.customer_name}` : undefined,
+    booking.phone ? `Phone: ${booking.phone}` : undefined,
+    booking.email ? `Email: ${booking.email}` : undefined,
+    booking.service ? `Service: ${booking.service}` : undefined,
+    booking.price ? `Price: KSh ${Number(booking.price).toLocaleString("en-KE")}` : undefined,
+    booking.booking_date && booking.booking_time
+      ? `Date: ${booking.booking_date} at ${booking.booking_time}`
+      : undefined,
+    booking.guests ? `Guests: ${booking.guests}` : undefined,
+    booking.provider_name ? `Preferred provider: ${booking.provider_name}` : undefined,
+    booking.notes ? `Notes: ${booking.notes}` : undefined,
+  ].filter(Boolean);
+
+  return buildWhatsAppUrl(lines.join("\n"));
+}
 export const ADDRESS_LINES = [
   "Westlands, behind Sarit Centre,",
   "School Lane,",

@@ -2,10 +2,22 @@ import { Link, createFileRoute } from "@tanstack/react-router";
 import { CheckCircle2, MessageCircle, Phone } from "lucide-react";
 import { z } from "zod";
 
-import { PHONE_DISPLAY, PHONE_TEL, WHATSAPP_URL } from "@/lib/spa";
+import { PHONE_DISPLAY, PHONE_TEL, buildBookingWhatsAppUrl } from "@/lib/spa";
 
 export const Route = createFileRoute("/booking/confirmed")({
-  validateSearch: z.object({ ref: z.string().optional() }),
+  validateSearch: z.object({
+    ref: z.string().optional(),
+    customer_name: z.string().optional(),
+    phone: z.string().optional(),
+    email: z.string().optional(),
+    service: z.string().optional(),
+    price: z.coerce.number().optional(),
+    booking_date: z.string().optional(),
+    booking_time: z.string().optional(),
+    guests: z.coerce.number().optional(),
+    provider_name: z.string().optional(),
+    notes: z.string().optional(),
+  }),
   head: () => ({
     meta: [
       { title: "Booking Request Received | Happy Ending Massage Spa" },
@@ -23,17 +35,18 @@ export const Route = createFileRoute("/booking/confirmed")({
 });
 
 function Confirmed() {
-  const { ref } = Route.useSearch();
+  const booking = Route.useSearch();
+  const whatsappUrl = buildBookingWhatsAppUrl(booking);
 
   return (
     <section className="mx-auto flex min-h-[80svh] max-w-2xl flex-col items-center justify-center px-4 pt-32 pb-20 text-center sm:px-6">
       <CheckCircle2 className="h-16 w-16 text-gold" />
       <h1 className="mt-6 font-display text-4xl sm:text-5xl">Booking request received</h1>
       <div className="luxe-divider mt-5 w-48" />
-      {ref && (
+      {booking.ref && (
         <div className="mt-8 rounded-xl border border-gold/40 bg-card px-8 py-6 shadow-luxe">
           <p className="eyebrow">Your Reference</p>
-          <p className="mt-2 font-display text-3xl tracking-wider text-gold">{ref}</p>
+          <p className="mt-2 font-display text-3xl tracking-wider text-gold">{booking.ref}</p>
           <p className="mt-2 text-xs uppercase tracking-[0.2em] text-muted-foreground">Status: Pending</p>
         </div>
       )}
@@ -44,7 +57,7 @@ function Confirmed() {
       </p>
       <div className="mt-10 grid w-full max-w-md gap-3 sm:grid-cols-2">
         <a
-          href={WHATSAPP_URL}
+          href={whatsappUrl}
           target="_blank"
           rel="noopener"
           className="flex h-14 items-center justify-center gap-2 rounded-full bg-primary text-sm uppercase tracking-[0.2em] text-primary-foreground"

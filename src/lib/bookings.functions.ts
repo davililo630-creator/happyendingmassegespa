@@ -14,13 +14,26 @@ const bookingSchema = z.object({
   guests: z.number().int().min(1).max(10),
   notes: z.string().trim().max(1000).optional().or(z.literal("")),
   provider_id: z.string().uuid().optional().or(z.literal("")),
-  provider_name: z.string().trim().max(80).optional().or(z.literal("")),
 });
 
 export const createBooking = createServerFn({ method: "POST" })
   .inputValidator((data: unknown) => bookingSchema.parse(data))
   .handler(async ({ data }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    let providerName: string | null = null;
+
+    if (data.provider_id) {
+      const { data: provider, error: providerError } = await supabaseAdmin
+        .from("providers")
+        .select("name")
+        .eq("id", data.provider_id)
+        .eq("is_active", true)
+        .maybeSingle();
+      if (providerError) throw new Error(providerError.message);
+      if (!provider) throw new Error("That service provider is no longer available.");
+      providerName = provider.name;
+    }
+
     const { data: row, error } = await supabaseAdmin
       .from("bookings")
       .insert({
@@ -34,7 +47,7 @@ export const createBooking = createServerFn({ method: "POST" })
         guests: data.guests,
         notes: data.notes ? data.notes : null,
         provider_id: data.provider_id ? data.provider_id : null,
-        provider_name: data.provider_name ? data.provider_name : null,
+        provider_name: providerName,
       })
       .select("reference, service, price, booking_date, booking_time, status")
       .single();
