@@ -83,6 +83,7 @@ function BookingPage() {
       guests: Number(form.get("guests") ?? 1),
       notes: String(form.get("notes") ?? "").trim(),
       provider_id: providerId,
+      provider_name: chosenProvider?.name ?? "",
     };
 
     if (payload.customer_name.length < 2) {
@@ -105,31 +106,12 @@ function BookingPage() {
       toast.error("Please enter a valid email address or leave it blank.");
       return;
     }
-    if ((providers ?? []).length > 0 && !providerId) {
-      toast.error("Please choose a service provider.");
-      return;
-    }
 
 
     setSaving(true);
     try {
       const booking = await submit({ data: payload });
-      navigate({
-        to: "/booking/confirmed",
-        search: {
-          ref: booking.reference,
-          customer_name: payload.customer_name,
-          phone: payload.phone,
-          email: payload.email || undefined,
-          service: payload.service,
-          price: selected.price,
-          booking_date: payload.booking_date,
-          booking_time: payload.booking_time,
-          guests: payload.guests,
-          provider_name: chosenProvider?.name ?? (providerId ? "Requested provider" : undefined),
-          notes: payload.notes || undefined,
-        },
-      });
+      navigate({ to: "/booking/confirmed", search: { ref: booking.reference } });
     } catch (error) {
       console.error(error);
       toast.error("We could not save your booking. Please try again or call us.");
